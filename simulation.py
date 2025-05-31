@@ -7,11 +7,12 @@ from estimation import estimate_jammer
 from visualization import plot_simulation
 import config
 
+
 def run_simulation():
     env = simpy.Environment()
 
     # Create jammer at fixed or random position
-    jammer_pos = np.array([config.AREA_SIZE/2, config.AREA_SIZE/2])
+    jammer_pos = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
     jammer = Jammer(jammer_pos)
 
     # Create drones at random positions
@@ -33,6 +34,7 @@ def run_simulation():
 
     # Visualize results
     plot_simulation(drones, jammer, estimated_pos)
+
 
 if __name__ == "__main__":
     run_simulation()

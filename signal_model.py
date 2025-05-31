@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def free_space_path_loss(tx_pos, rx_pos, tx_power, noise_std=0):
     """
     Compute RSSI at rx_pos from tx_pos using free-space path loss.
