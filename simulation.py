@@ -34,6 +34,11 @@ def run_simulation():
     drone_positions1 = np.array([d.position.copy() for d in drones])
     rssi1 = np.array([d.measure_signal() for d in drones])
 
+    # Initialize running estimate and uncertainty (covariance)
+    running_estimate = None
+    running_cov = None
+    alpha = 0.7  # blending factor for exponential moving average
+
     for step in range(NUM_STEPS):
         # Swarm-like movement: cohesion, separation, alignment
         positions = np.array([d.position for d in drones])
@@ -82,8 +87,15 @@ def run_simulation():
         rssi2 = np.array([d.measure_signal() for d in drones])
 
         # Estimate jammer position using movement ML
-        estimate = estimate_jammer_movement_ml(drone_positions1, drone_positions2, rssi1, rssi2)
-        estimate_hist.append(estimate)
+        current_estimate = estimate_jammer_movement_ml(drone_positions1, drone_positions2, rssi1, rssi2)
+
+        # Improve estimate over time using exponential moving average
+        if running_estimate is None:
+            running_estimate = current_estimate
+        else:
+            running_estimate = alpha * running_estimate + (1 - alpha) * current_estimate
+
+        estimate_hist.append(running_estimate.copy())
         drone_positions_hist.append(drone_positions2.copy())
 
         # Prepare for next step
