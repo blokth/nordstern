@@ -15,15 +15,24 @@ def run_simulation():
     jammer_pos = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
     jammer = Jammer(jammer_pos)
 
-    # Create drones in a triangle formation (swarm)
-    triangle_center = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
+    # Place drones in a triangle formation at 60-80m from the jammer, tangent to the circle
+    jammer_pos = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
+    distance_from_jammer = np.random.uniform(60, 80)
     triangle_size = 5  # meters, side length of the triangle
 
-    # Calculate triangle vertices (equilateral, not pointing at jammer)
-    angle_offset = np.pi / 4  # rotate triangle so it's not tangent to jammer
+    # Choose a random angle for the center of the triangle on the circle
+    center_angle = np.random.uniform(0, 2 * np.pi)
+    # The center of the triangle is at this point on the circle
+    triangle_center = jammer_pos + distance_from_jammer * np.array([np.cos(center_angle), np.sin(center_angle)])
+
+    # The triangle should be tangent to the circle at this point.
+    # The tangent direction is perpendicular to the radius vector.
+    tangent_angle = center_angle + np.pi / 2  # Perpendicular to radius
+
+    # Place the triangle vertices around the center, rotated so the triangle's base is tangent to the circle
     triangle_points = []
     for i in range(config.NUM_DRONES):
-        angle = angle_offset + i * 2 * np.pi / config.NUM_DRONES
+        angle = tangent_angle + i * 2 * np.pi / config.NUM_DRONES
         point = triangle_center + triangle_size * np.array([np.cos(angle), np.sin(angle)])
         triangle_points.append(point)
 
