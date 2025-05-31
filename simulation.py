@@ -34,7 +34,3 @@ def run_simulation():
 
     # Visualize results
     plot_simulation(drones, jammer, estimated_pos)
-
-
-if __name__ == "__main__":
-    run_simulation()
