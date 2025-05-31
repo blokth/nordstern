@@ -115,6 +115,22 @@ def run_simulation():
 
         # Build feature vector for all drones concatenated:
         # For each drone: [x1, y1, yaw1, v_x, v_y, aoa1, rssi1, dx, dy, delta_yaw, delta_aoa, delta_rssi]
+
+        # Sort drones by RSSI1 (descending: closest first)
+        sorted_indices = np.argsort(-rssi1)
+        drone_positions1 = drone_positions1[sorted_indices]
+        drone_positions2 = drone_positions2[sorted_indices]
+        drone_orientations1 = drone_orientations1[sorted_indices]
+        drone_orientations2 = drone_orientations2[sorted_indices]
+        aoa1 = aoa1[sorted_indices]
+        aoa2 = aoa2[sorted_indices]
+        rssi1 = rssi1[sorted_indices]
+        rssi2 = rssi2[sorted_indices]
+        delta_pos = delta_pos[sorted_indices]
+        delta_orient = delta_orient[sorted_indices]
+        delta_aoa = delta_aoa[sorted_indices]
+        delta_rssi = delta_rssi[sorted_indices]
+
         features = []
         for i in range(len(drones)):
             yaw1 = drone_orientations1[i]
