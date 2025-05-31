@@ -1,5 +1,5 @@
 import numpy as np
-from estimation import train_jammer_estimator, _flatten_features
+from estimation import train_jammer_estimator, _make_features
 from signal_model import free_space_path_loss
 from config import AREA_SIZE, NUM_DRONES, JAMMER_POWER, NOISE_STD
 
@@ -17,13 +17,15 @@ for _ in range(N_SAMPLES):
     # Simulate RSSI measurements for each drone
     rssi_measurements = []
     for drone_pos in drone_positions:
-        rssi = free_space_path_loss(jammer_pos, drone_pos, JAMMER_POWER, noise_std=NOISE_STD)
+        rssi = free_space_path_loss(
+            jammer_pos, drone_pos, JAMMER_POWER, noise_std=NOISE_STD
+        )
         rssi_measurements.append(rssi)
     rssi_measurements = np.array(rssi_measurements)
     # Add small random noise to drone positions for more robustness
     drone_positions += np.random.normal(0, 0.5, drone_positions.shape)
-    # Flatten features and append to training set
-    X_train.append(_flatten_features(drone_positions, rssi_measurements))
+    # Build features and append to training set
+    X_train.append(_make_features(drone_positions, rssi_measurements))
     y_train.append(jammer_pos)
 
 X_train = np.array(X_train)
