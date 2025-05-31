@@ -35,10 +35,47 @@ def run_simulation():
     rssi1 = np.array([d.measure_signal() for d in drones])
 
     for step in range(NUM_STEPS):
-        # Move each drone in a random direction
-        for d in drones:
-            angle = np.random.uniform(0, 2 * np.pi)
-            d.position += MOVE_DIST * np.array([np.cos(angle), np.sin(angle)])
+        # Swarm-like movement: cohesion, separation, alignment
+        positions = np.array([d.position for d in drones])
+        velocities = []
+        for i, d in enumerate(drones):
+            # Cohesion: move toward center of mass
+            center_of_mass = positions.mean(axis=0)
+            cohesion_vec = center_of_mass - d.position
+
+            # Separation: avoid crowding neighbors
+            separation_vec = np.zeros(2)
+            for j, other in enumerate(drones):
+                if i != j:
+                    diff = d.position - other.position
+                    dist = np.linalg.norm(diff)
+                    if dist < 15:  # separation threshold
+                        if dist > 1e-3:
+                            separation_vec += diff / dist
+
+            # Alignment: match average direction (here, just use previous direction if available)
+            # For simplicity, random small alignment
+            alignment_vec = np.random.uniform(-1, 1, size=2)
+
+            # Weighted sum of behaviors
+            move_vec = (
+                0.6 * cohesion_vec +
+                1.2 * separation_vec +
+                0.3 * alignment_vec
+            )
+            # Normalize and scale to MOVE_DIST
+            norm = np.linalg.norm(move_vec)
+            if norm > 1e-3:
+                move_vec = (move_vec / norm) * MOVE_DIST
+            else:
+                move_vec = np.random.uniform(-1, 1, size=2)
+                move_vec = (move_vec / np.linalg.norm(move_vec)) * MOVE_DIST
+
+            velocities.append(move_vec)
+
+        # Apply movement and clip to area
+        for d, v in zip(drones, velocities):
+            d.position += v
             d.position = np.clip(d.position, 0, config.AREA_SIZE)
 
         drone_positions2 = np.array([d.position.copy() for d in drones])
