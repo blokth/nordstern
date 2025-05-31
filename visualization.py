@@ -25,18 +25,22 @@ import numpy as np
 
 def animate_simulation(drone_positions_hist, jammer, estimate_hist):
     fig, ax = plt.subplots(figsize=(8,8))
-    ax.set_xlim(0, 1.1 * jammer.position[0])
-    ax.set_ylim(0, 1.1 * jammer.position[1])
+    # Set axis limits to cover the whole area (use config.AREA_SIZE if available)
+    max_x = max([positions[:,0].max() for positions in drone_positions_hist] + [jammer.position[0]])
+    max_y = max([positions[:,1].max() for positions in drone_positions_hist] + [jammer.position[1]])
+    ax.set_xlim(0, max_x + 10)
+    ax.set_ylim(0, max_y + 10)
 
-    jammer_dot, = ax.plot(jammer.position[0], jammer.position[1], 'rx', label='Jammer', markersize=12)
+    jammer_dot, = ax.plot([jammer.position[0]], [jammer.position[1]], 'rx', label='Jammer', markersize=12)
     drones_scatter = ax.scatter([], [], c='blue', label='Drones')
     estimate_dot, = ax.plot([], [], 'go', label='Estimate', markersize=8)
 
     def update(frame):
         drone_positions = drone_positions_hist[frame]
-        estimate = estimate_hist[frame]
+        estimate = np.asarray(estimate_hist[frame])
         drones_scatter.set_offsets(drone_positions)
-        estimate_dot.set_data(estimate[0], estimate[1])
+        # set_data expects sequences, so wrap in list or np.array
+        estimate_dot.set_data([estimate[0]], [estimate[1]])
         return drones_scatter, estimate_dot
 
     ax.legend()
