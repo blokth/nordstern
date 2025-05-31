@@ -15,15 +15,20 @@ def run_simulation():
     jammer_pos = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
     jammer = Jammer(jammer_pos)
 
-    # Create drones in a group (clustered together)
-    group_center = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
-    group_radius = 3  # meters, adjust for tightness of group
+    # Create drones in a triangle formation (swarm)
+    triangle_center = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
+    triangle_size = 5  # meters, side length of the triangle
+
+    # Calculate triangle vertices (equilateral, not pointing at jammer)
+    angle_offset = np.pi / 4  # rotate triangle so it's not tangent to jammer
+    triangle_points = []
+    for i in range(config.NUM_DRONES):
+        angle = angle_offset + i * 2 * np.pi / config.NUM_DRONES
+        point = triangle_center + triangle_size * np.array([np.cos(angle), np.sin(angle)])
+        triangle_points.append(point)
+
     drones = []
-    for _ in range(config.NUM_DRONES):
-        angle = np.random.uniform(0, 2 * np.pi)
-        radius = np.random.uniform(0, group_radius)
-        offset = np.array([np.cos(angle), np.sin(angle)]) * radius
-        pos = group_center + offset
+    for pos in triangle_points:
         drone = Drone(env, pos, jammer)
         drones.append(drone)
 
