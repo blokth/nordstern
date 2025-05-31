@@ -43,7 +43,7 @@ def train_jammer_estimator(X_train, y_train, save_path=_MODEL_PATH):
     X_train: array of shape (n_samples, n_features)
     y_train: array of shape (n_samples, 2) -- true jammer positions
     """
-    model = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=1000, random_state=42)
+    model = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=5000, random_state=42, verbose=True)
     model.fit(X_train, y_train)
     joblib.dump(model, save_path)
     return model
