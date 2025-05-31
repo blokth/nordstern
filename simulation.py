@@ -15,10 +15,15 @@ def run_simulation():
     jammer_pos = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
     jammer = Jammer(jammer_pos)
 
-    # Create drones at random positions
+    # Create drones in a group (clustered together)
+    group_center = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
+    group_radius = 3  # meters, adjust for tightness of group
     drones = []
     for _ in range(config.NUM_DRONES):
-        pos = np.random.uniform(0, config.AREA_SIZE, size=2)
+        angle = np.random.uniform(0, 2 * np.pi)
+        radius = np.random.uniform(0, group_radius)
+        offset = np.array([np.cos(angle), np.sin(angle)]) * radius
+        pos = group_center + offset
         drone = Drone(env, pos, jammer)
         drones.append(drone)
 
