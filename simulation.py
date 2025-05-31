@@ -16,7 +16,6 @@ def run_simulation():
     jammer = Jammer(jammer_pos)
 
     # Place drones in a triangle formation at 60-80m from the jammer, tangent to the circle
-    jammer_pos = np.array([config.AREA_SIZE / 2, config.AREA_SIZE / 2])
     distance_from_jammer = np.random.uniform(60, 80)
     triangle_size = 5  # meters, side length of the triangle
 
