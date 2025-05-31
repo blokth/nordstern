@@ -36,6 +36,9 @@ def run_simulation():
         point = triangle_center + triangle_size * np.array([np.cos(angle), np.sin(angle)])
         triangle_points.append(point)
 
+    # Store relative offsets from the triangle center for each drone
+    relative_offsets = [point - triangle_center for point in triangle_points]
+
     drones = []
     for pos in triangle_points:
         drone = Drone(env, pos, jammer)
@@ -70,48 +73,22 @@ def run_simulation():
     # Load ML model once
     ml_model = load_jammer_estimator()
 
+    # Choose a fixed movement direction for the group (e.g., tangent to the circle)
+    group_move_direction = np.array([np.cos(tangent_angle), np.sin(tangent_angle)])
+    group_move_direction = group_move_direction / np.linalg.norm(group_move_direction)  # ensure unit vector
+
+    # Initialize triangle center
+    current_triangle_center = triangle_center.copy()
+
     for step in range(NUM_STEPS):
-        # Swarm-like movement: cohesion, separation, alignment
-        positions = np.array([d.position for d in drones])
-        velocities = []
+        # Move the triangle center in the chosen direction
+        current_triangle_center += group_move_direction * MOVE_DIST
+        # Optionally, clip to area bounds
+        current_triangle_center = np.clip(current_triangle_center, 0, config.AREA_SIZE)
+
+        # Update drone positions to maintain triangle formation
         for i, d in enumerate(drones):
-            # Cohesion: move toward center of mass
-            center_of_mass = positions.mean(axis=0)
-            cohesion_vec = center_of_mass - d.position
-
-            # Separation: avoid crowding neighbors
-            separation_vec = np.zeros(2)
-            for j, other in enumerate(drones):
-                if i != j:
-                    diff = d.position - other.position
-                    dist = np.linalg.norm(diff)
-                    if dist < 15:  # separation threshold
-                        if dist > 1e-3:
-                            separation_vec += diff / dist
-
-            # Alignment: match average direction (here, just use previous direction if available)
-            # For simplicity, random small alignment
-            alignment_vec = np.random.uniform(-1, 1, size=2)
-
-            # Weighted sum of behaviors
-            move_vec = (
-                0.6 * cohesion_vec +
-                1.2 * separation_vec +
-                0.3 * alignment_vec
-            )
-            # Normalize and scale to MOVE_DIST
-            norm = np.linalg.norm(move_vec)
-            if norm > 1e-3:
-                move_vec = (move_vec / norm) * MOVE_DIST
-            else:
-                move_vec = np.random.uniform(-1, 1, size=2)
-                move_vec = (move_vec / np.linalg.norm(move_vec)) * MOVE_DIST
-
-            velocities.append(move_vec)
-
-        # Apply movement and clip to area
-        for d, v in zip(drones, velocities):
-            d.position += v
+            d.position = current_triangle_center + relative_offsets[i]
             d.position = np.clip(d.position, 0, config.AREA_SIZE)
 
         drone_positions2 = np.array([d.position.copy() for d in drones])
