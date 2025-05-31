@@ -37,6 +37,44 @@ def make_movement_features(drone_positions1, drone_positions2, rssi1, rssi2):
     features = np.hstack([drone_positions1, drone_positions2, dx[:, None], dy[:, None], rssi1[:, None], rssi2[:, None], drssi[:, None]])
     return features.flatten()
 
+def make_movement_features_with_imu(drone_positions1, drone_positions2, orientations1, orientations2, aoa1, aoa2, rssi1, rssi2):
+    """
+    Features: for each drone:
+    [x1, y1, yaw1, v_x, v_y, aoa1, rssi1, dx, dy, delta_yaw, delta_aoa, delta_rssi]
+    Concatenate for all drones.
+    """
+    drone_positions1 = np.asarray(drone_positions1)
+    drone_positions2 = np.asarray(drone_positions2)
+    orientations1 = np.asarray(orientations1)
+    orientations2 = np.asarray(orientations2)
+    aoa1 = np.asarray(aoa1)
+    aoa2 = np.asarray(aoa2)
+    rssi1 = np.asarray(rssi1)
+    rssi2 = np.asarray(rssi2)
+
+    delta_pos = drone_positions2 - drone_positions1
+    delta_orient = orientations2 - orientations1
+    delta_aoa = aoa2 - aoa1
+    delta_rssi = rssi2 - rssi1
+
+    features = []
+    for i in range(len(drone_positions1)):
+        yaw1 = orientations1[i]
+        v_x = delta_pos[i,0]
+        v_y = delta_pos[i,1]
+        features.extend([
+            drone_positions1[i,0], drone_positions1[i,1],
+            yaw1,
+            v_x, v_y,
+            aoa1[i],
+            rssi1[i],
+            delta_pos[i,0], delta_pos[i,1],
+            delta_orient[i],
+            delta_aoa[i],
+            delta_rssi[i]
+        ])
+    return np.array(features)
+
 def train_jammer_estimator(X_train, y_train, save_path=_MODEL_PATH):
     """
     Train an MLPRegressor to estimate jammer position.
