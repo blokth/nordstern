@@ -23,6 +23,20 @@ def _make_features(drone_positions, rssi_measurements):
     diff_features = np.array(diff_features)
     return np.concatenate([drone_positions, diff_features])
 
+def make_movement_features(drone_positions1, drone_positions2, rssi1, rssi2):
+    """
+    Features: for each drone, [x1, y1, x2, y2, dx, dy, rssi1, rssi2, drssi]
+    """
+    drone_positions1 = np.asarray(drone_positions1)
+    drone_positions2 = np.asarray(drone_positions2)
+    rssi1 = np.asarray(rssi1)
+    rssi2 = np.asarray(rssi2)
+    dx = drone_positions2[:, 0] - drone_positions1[:, 0]
+    dy = drone_positions2[:, 1] - drone_positions1[:, 1]
+    drssi = rssi2 - rssi1
+    features = np.hstack([drone_positions1, drone_positions2, dx[:, None], dy[:, None], rssi1[:, None], rssi2[:, None], drssi[:, None]])
+    return features.flatten()
+
 def train_jammer_estimator(X_train, y_train, save_path=_MODEL_PATH):
     """
     Train an MLPRegressor to estimate jammer position.
@@ -53,6 +67,16 @@ def estimate_jammer_ml(drone_positions, rssi_measurements, model=None):
     if model is None:
         model = load_jammer_estimator()
     features = _make_features(drone_positions, rssi_measurements).reshape(1, -1)
+    pred = model.predict(features)
+    return pred.flatten()
+
+def estimate_jammer_movement_ml(drone_positions1, drone_positions2, rssi1, rssi2, model=None):
+    """
+    Estimate jammer position using drone positions and RSSI before and after movement.
+    """
+    if model is None:
+        model = load_jammer_estimator()
+    features = make_movement_features(drone_positions1, drone_positions2, rssi1, rssi2).reshape(1, -1)
     pred = model.predict(features)
     return pred.flatten()
 
