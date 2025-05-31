@@ -44,8 +44,8 @@ def run_simulation():
         drones.append(drone)
 
     # Number of movement steps
-    NUM_STEPS = 10
-    MOVE_DIST = 10  # meters per step
+    NUM_STEPS = 40      # Increase number of steps
+    MOVE_DIST = 2.5     # Decrease distance per step
 
     # Initialize histories
     drone_positions_hist = []
@@ -78,6 +78,8 @@ def run_simulation():
 
     # Initialize triangle center
     current_triangle_center = triangle_center.copy()
+
+    window_estimates = []
 
     for step in range(NUM_STEPS):
         # Move the triangle center in the chosen direction
@@ -140,7 +142,15 @@ def run_simulation():
         else:
             running_estimate = alpha * running_estimate + (1 - alpha) * current_estimate
 
-        estimate_hist.append(running_estimate.copy())
+        # Optionally, use a windowed average over the last N estimates for further smoothing
+        WINDOW_SIZE = 8  # You can tune this
+        window_estimates.append(current_estimate.copy())
+        if len(window_estimates) > WINDOW_SIZE:
+            window_estimates.pop(0)
+        windowed_estimate = np.mean(window_estimates, axis=0)
+
+        # Use windowed_estimate for visualization and as the improved estimate
+        estimate_hist.append(windowed_estimate.copy())
         drone_positions_hist.append(drone_positions2.copy())
 
         # Prepare for next step
