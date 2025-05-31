@@ -44,8 +44,8 @@ def run_simulation():
         drones.append(drone)
 
     # Number of movement steps
-    NUM_STEPS = 40      # Increase number of steps
-    MOVE_DIST = 2.5     # Decrease distance per step
+    NUM_STEPS = 80      # Increase number of steps
+    MOVE_DIST = 1.25    # Decrease distance per step
 
     # Initialize histories
     drone_positions_hist = []
@@ -143,7 +143,7 @@ def run_simulation():
             running_estimate = alpha * running_estimate + (1 - alpha) * current_estimate
 
         # Optionally, use a windowed average over the last N estimates for further smoothing
-        WINDOW_SIZE = 8  # You can tune this
+        WINDOW_SIZE = 16  # Larger window to leverage more steps
         window_estimates.append(current_estimate.copy())
         if len(window_estimates) > WINDOW_SIZE:
             window_estimates.pop(0)
@@ -161,3 +161,6 @@ def run_simulation():
 
     # Visualize the animation
     animate_simulation(drone_positions_hist, jammer, estimate_hist)
+
+    final_estimate = np.mean(estimate_hist, axis=0)
+    print(f"Final averaged estimate over all steps: {final_estimate}")
