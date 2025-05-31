@@ -1,6 +1,6 @@
 import simpy
 import numpy as np
-from signal import free_space_path_loss
+from signal_model import free_space_path_loss
 import config
 
 class Drone:

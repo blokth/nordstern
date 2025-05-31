@@ -2,7 +2,7 @@ import simpy
 import numpy as np
 from jammer import Jammer
 from drone import Drone
-from signal import free_space_path_loss
+from signal_model import free_space_path_loss
 from estimation import estimate_jammer
 from visualization import plot_simulation
 import config
