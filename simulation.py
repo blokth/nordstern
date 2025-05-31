@@ -73,9 +73,9 @@ def run_simulation():
     # Load ML model once
     ml_model = load_jammer_estimator()
 
-    # Choose a fixed movement direction for the group (e.g., tangent to the circle)
-    group_move_direction = np.array([np.cos(tangent_angle), np.sin(tangent_angle)])
-    group_move_direction = group_move_direction / np.linalg.norm(group_move_direction)  # ensure unit vector
+    # Choose a random fixed movement direction for the group (not always tangent)
+    move_angle = np.random.uniform(0, 2 * np.pi)
+    group_move_direction = np.array([np.cos(move_angle), np.sin(move_angle)])
 
     # Initialize triangle center
     current_triangle_center = triangle_center.copy()
