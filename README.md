@@ -13,7 +13,6 @@ position and build a map of the environment using only:
 - Inertial Measurement Units (IMU)
 - Phased Array Antennas (AoA estimation)
 - Opportunistic signal detection (e.g., jammer broadcasts)
-- No GPS, limited visual input
 
 ---
 
