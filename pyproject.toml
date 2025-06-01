@@ -1,7 +1,7 @@
 [project]
 name = "nordstern"
 version = "0.1.0"
-description = "Add your description here"
+description = "Battlefield drone navigation using phased array AoA, IMU, and RF signal events"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
