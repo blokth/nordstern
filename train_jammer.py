@@ -32,9 +32,6 @@ y_train = []
 for _ in range(N_SAMPLES):
     # Random jammer position in the area
     jammer_pos = np.random.uniform(0, AREA_SIZE, size=2)
-<<<<<<< HEAD
-    # Random drone positions in the area
-<<<<<<< HEAD
     drone_positions = np.random.uniform(0, AREA_SIZE, size=(NUM_DRONES, 2))
     # Simulate RSSI measurements for each drone
     rssi_measurements = []
@@ -46,25 +43,9 @@ for _ in range(N_SAMPLES):
     rssi_measurements = np.array(rssi_measurements)
     # Add small random noise to drone positions for more robustness
     drone_positions += np.random.normal(0, 0.5, drone_positions.shape)
-=======
-=======
     # Random initial drone positions
->>>>>>> eeb558e (feat: enhance jammer localization with IMU and phased array features and training updates)
-    drone_positions1 = np.random.uniform(0, AREA_SIZE, size=(NUM_DRONES, 2))
-    # Random initial orientations (yaw)
-    drone_orientations1 = np.random.uniform(-np.pi, np.pi, size=NUM_DRONES)
-    # Move each drone 10m in a random direction
-    angles = np.random.uniform(0, 2*np.pi, size=NUM_DRONES)
-    move = np.stack([10*np.cos(angles), 10*np.sin(angles)], axis=1)
-    drone_positions2 = drone_positions1 + move
-    # Add small random noise to drone positions for robustness
-    drone_positions1 += np.random.normal(0, 0.5, drone_positions1.shape)
-    drone_positions2 += np.random.normal(0, 0.5, drone_positions2.shape)
-<<<<<<< HEAD
->>>>>>> 1bc2def (feat: add movement-based features and training for improved jammer estimation)
     # Build features and append to training set
     X_train.append(make_movement_features(drone_positions1, drone_positions2, rssi1, rssi2))
-=======
     # Simulate orientations after movement
     drone_orientations2 = []
     for i in range(NUM_DRONES):
