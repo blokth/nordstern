@@ -1,6 +1,6 @@
-import gym
+import gymnasium as gym
 import numpy as np
-from gym import spaces
+from gymnasium import spaces
 from signal_model import free_space_path_loss
 
 class JammerLocalizationEnv(gym.Env):
