@@ -10,7 +10,11 @@ def main():
     pos_j = np.random.randint(low=0, high=MAP_SIZE, size=2)
 
     d = Drone(tuple(pos_d))
+    d2 = Drone(tuple(pos_d))
     j = Jammer(tuple(pos_j))
+
+    print(d.id)
+    print(d2.id)
 
     plt.plot(d.pos[0], d.pos[1], "bo")
     plt.plot(j.pos[0], j.pos[1], "ro")
